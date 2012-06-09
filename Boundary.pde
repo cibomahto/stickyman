@@ -30,7 +30,7 @@ class Boundary {
     PolygonDef sd = new PolygonDef();
     sd.setAsBox(box2dW, box2dH);
     sd.density = 0;    // No density means it won't move!
-    sd.friction = 0.3f;
+    sd.friction = 1f;
 
     // Create the body
     BodyDef bd = new BodyDef();
