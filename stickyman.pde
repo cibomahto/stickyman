@@ -23,6 +23,7 @@ Hero hero;
 
 void setup() {
   size(640,480);
+  frameRate(60);
   smooth();
 
   // Initialize box2d physics and create the world
@@ -35,10 +36,13 @@ void setup() {
   boundaries.add(new Boundary(width/2,5,width,10));
   boundaries.add(new Boundary(width-5,height/2,10,height));
   boundaries.add(new Boundary(5,height/2,10,height));
+
+  boundaries.add(new Boundary(70,390,150,5));
   
   // Make the box
   hero = new Hero(25,25);
   
+  box2d.setGravity(0, -40);
 }
 
 void draw() {
@@ -62,6 +66,7 @@ void draw() {
   
   popMatrix();
 
+  println(frameRate);
 }
 
 void keyPressed(){

@@ -5,11 +5,24 @@ class Hero {
 
   // We need to keep track of a Body and a width and height
   Body body;
+  
+  PImage run_image;
+  
   float w;
   float h;
   
+  Boolean facing_direction = true; // Direction we are facing. right is True
+  
   float max_speed = 20;
 
+  // If we aren't jumping and are on a platform, we can start a jump
+  // If we started a jump, we might be able to continue adding force
+  // If we finished starting a jump, we are just ballistic
+  final static int JUMP_NOT_JUMPING = 0;
+  final static int JUMP_STARTING    = 1;
+  final static int JUMP_LANDING     = 2;
+  
+  float jump_state = 0;
   float jump_frames = 0;
   float max_jump_frames = 5;
 
@@ -19,6 +32,13 @@ class Hero {
     float y = y_;
     w = 24;
     h = 24;
+    
+    // Reset the jump state
+    jump_state = 0;
+    
+    run_image = loadImage("man_run.png");
+    run_image.resize(int(w), int(h));
+    
     // Add the box to the box2d world
     makeBody(new Vec2(x,y),w,h);
   }
@@ -36,19 +56,20 @@ class Hero {
   }
   
   void update(int direction) {
-    print(direction);
     if ((direction & KEY_RIGHT) > 0) {
       if (body.getLinearVelocity().x < max_speed) //if we haven't reached the max speed in this direction
-        body.applyImpulse(new Vec2(10,0), body.getPosition());
+        body.applyImpulse(new Vec2(20,0), body.getPosition());
+        facing_direction = true;
     }
     if ((direction & KEY_LEFT) > 0) {
       if (body.getLinearVelocity().x > - max_speed) //if we haven't reached the max speed in this direction
-        body.applyImpulse(new Vec2(-10,0), body.getPosition());
+        body.applyImpulse(new Vec2(-20,0), body.getPosition());
+        facing_direction = false;
     }
     
     if ((direction & KEY_SPACE) > 0) {
       if (body.getLinearVelocity().y < max_speed) //if we haven't reached the max speed in this direction
-        body.applyImpulse(new Vec2(0,20), body.getPosition());
+        body.applyImpulse(new Vec2(0,80), body.getPosition());
     }
   }
 
@@ -61,11 +82,16 @@ class Hero {
 
     rectMode(PConstants.CENTER);
     pushMatrix();
-    translate(pos.x,pos.y);
-    rotate(a);
-    fill(175);
-    stroke(0);
-    rect(0,0,w,h);
+      translate(pos.x,pos.y);
+      rotate(a);
+      if (facing_direction == false) {
+        scale(-1,1);
+      }
+      
+      image(run_image, -w/2, -h/2);
+//      fill(8,134,86);
+//      stroke(255);
+//      rect(0,0,w,h);
     popMatrix();
   }
 
@@ -85,8 +111,8 @@ class Hero {
     
     // Parameters that affect physics
     sd.density = 4.0f;
-    sd.friction = 0.3f;
-    sd.restitution = 0.5f;
+    sd.friction = 0.5f;
+    sd.restitution = 0.1f;
 
     // Attach that shape to our body!
     body.createShape(sd);
