@@ -1,3 +1,7 @@
+// Stickyman
+// <https://github.com/cibomahto/stickyman>
+// By Matt Mets, 2012
+
 import pbox2d.*;
 import org.jbox2d.common.*;
 import org.jbox2d.dynamics.joints.*;

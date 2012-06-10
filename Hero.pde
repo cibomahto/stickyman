@@ -1,3 +1,7 @@
+// Stickyman
+// <https://github.com/cibomahto/stickyman>
+// By Matt Mets, 2012
+
 // Hero person
 
 float CalculateMagnitudeInDirection(Vec2 vector, float angle) {
