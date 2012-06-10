@@ -237,7 +237,7 @@ class Hero {
   void doRotate(float rotation) {
     // only support 90 degree rotations and gravity
     gravity_rotation += rotation;
-    update_gravity();
+    updateGravity();
   }
 }
 

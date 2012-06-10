@@ -18,7 +18,10 @@ int player_direction = 0;
 PBox2D box2d;
 
 // A list we'll use to track fixed objects
-ArrayList boundaries;
+ArrayList<Boundary> boundaries;
+
+// A list for all of our rectangles
+ArrayList<Box> boxes;
 
 Hero hero;
 
@@ -40,9 +43,11 @@ void setup() {
   box2d.createWorld();
   
   box2d.listenForCollisions();
+  
+  boundaries = new ArrayList<Boundary>();
+  boxes = new ArrayList<Box>();
 
   // Add a bunch of fixed boundaries
-  boundaries = new ArrayList();
   boundaries.add(new Boundary(width/2,height-5,width,10));
   boundaries.add(new Boundary(width/2,5,width,10));
   boundaries.add(new Boundary(width-5,height/2,10,height));
@@ -63,13 +68,18 @@ void setup() {
 //  boundaries.add(new Boundary(170,390,150,10));
 //  boundaries.add(new Boundary(270,390,150,10));
   
-  // Make the box
+  // Make some boxes
+  for(int i = 0; i < 100; i++) {
+    boxes.add(new Box(340,310));
+  }    
+  
+  // Make the hero
   hero = new Hero(25,25);
   
-  update_gravity();
+  updateGravity();
 }
 
-void update_gravity() {
+void updateGravity() {
   box2d.setGravity(gravity_amount*cos(gravity_rotation), gravity_amount*sin(gravity_rotation));
 }
 
@@ -104,14 +114,18 @@ void draw() {
     rect(width/2,height/2,width,height);
 
     // Draw the boundaries
-    for (int i = 0; i < boundaries.size(); i++) {
-      Boundary wall = (Boundary) boundaries.get(i);
+    for (Boundary wall: boundaries) {
       wall.display();
+    }
+    
+    // Display all the boxes
+    for (Box b: boxes) {
+      b.display();
     }
     
     hero.update(player_direction);
     
-    // Draw the box
+    // Draw the hero
     hero.display();
   
   popMatrix();
