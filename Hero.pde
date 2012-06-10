@@ -173,7 +173,7 @@ class Hero {
     sd.setAsBox(box2dW, box2dH);
 
     // Parameters that affect physics
-    sd.density = 4.0f;
+    sd.density = 2.0f;
     sd.friction = 0.5f;
     sd.restitution = 0.1f;
 
@@ -192,14 +192,25 @@ class Hero {
       println("rotating!");
 //      println(body.getLinearVelocity().x);
       float velocity_angle = c2a(body.getLinearVelocity());
+      
+      float new_gravity_rotation = gravity_rotation;
+      
+      while(new_gravity_rotation < 0) {
+        new_gravity_rotation+=2*PI;
+      }
+      new_gravity_rotation = new_gravity_rotation%(PI*2);
+      
       println(velocity_angle);
-      println(gravity_rotation);
-      println(velocity_angle - (gravity_rotation%(2*PI)));
-      if ((abs(velocity_angle - gravity_rotation)%(2*PI)) < PI) {
-        doRotate(-PI/2);        
+      println(new_gravity_rotation);
+      println(velocity_angle - (new_gravity_rotation));
+      
+      if ((velocity_angle - new_gravity_rotation+6*PI)%(2*PI) < PI) {
+        println("cw");
+        doRotate(PI/2);     
       }
       else {
-        doRotate(PI/2);
+        println("ccw");
+        doRotate(-PI/2);
       }
       
       // are we going left or right?

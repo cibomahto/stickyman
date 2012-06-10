@@ -48,7 +48,20 @@ void setup() {
   boundaries.add(new Boundary(width-5,height/2,10,height));
   boundaries.add(new Boundary(5,height/2,10,height));
 
-  boundaries.add(new Boundary(70,390,150,5));
+  // inside c
+  boundaries.add(new Boundary(150,100,99,10));
+  boundaries.add(new Boundary(350,600,509,10));
+  boundaries.add(new Boundary(100,350,10,509));
+  boundaries.add(new Boundary(600,550,10,99));
+
+  // steps 1
+  boundaries.add(new Boundary(250,200,99,10));
+  boundaries.add(new Boundary(350,300,99,10));
+  boundaries.add(new Boundary(450,400,99,10));
+  boundaries.add(new Boundary(550,500,99,10));
+  
+//  boundaries.add(new Boundary(170,390,150,10));
+//  boundaries.add(new Boundary(270,390,150,10));
   
   // Make the box
   hero = new Hero(25,25);
