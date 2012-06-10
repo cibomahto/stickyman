@@ -37,6 +37,7 @@ class Boundary {
     bd.position.set(box2d.coordPixelsToWorld(center));
     b = box2d.createBody(bd);
     b.createShape(sd);
+    b.setUserData(this);
   }
 
   // Draw the boundary, if it were at an angle we'd have to do something fancier
