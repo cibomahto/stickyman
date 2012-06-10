@@ -1,4 +1,15 @@
 // Hero person
+
+float CalculateMagnitudeInDirection(Vec2 vector, float angle) {
+  return pow(pow(vector.x*cos(angle),2)+ pow(vector.y*sin(angle),2), .5);
+}
+
+float c2a (Vec2 v){
+  float angle = (atan2(v.y,v.x));
+  return angle;
+} 
+
+
 class Hero {
 
   // We need to keep track of a Body and a width and height
@@ -58,67 +69,59 @@ class Hero {
   }
 
   void update(int direction) {
-    
+
+       
     // We want to apply force in character space, which is rotated by the gravity rotation.
     if ((direction & KEY_RIGHT) > 0) {
       //if (body.getLinearVelocity().x < max_speed) //if we haven't reached the max speed in this direction
-      
+      if(CalculateMagnitudeInDirection(body.getLinearVelocity(), gravity_rotation-PI/2) < max_speed) {
         body.applyImpulse(
           new Vec2(-20*cos(gravity_rotation-PI/2),
                    -20*sin(gravity_rotation-PI/2)),
           body.getPosition()
         );
-        
+      }
       facing_direction = true;
     }
     if ((direction & KEY_LEFT) > 0) {
-      //if (body.getLinearVelocity().x > - max_speed) //if we haven't reached the max speed in this direction
-
+      if(CalculateMagnitudeInDirection(body.getLinearVelocity(), gravity_rotation+PI/2) < max_speed) {
         body.applyImpulse(
           new Vec2(20*cos(gravity_rotation-PI/2),
                    20*sin(gravity_rotation-PI/2)),
           body.getPosition()
         );
-
+          }
       facing_direction = false;
     }
-    
-    if ((direction & KEY_UP) > 0) {
-      if (can_rotate) {
-        doRotate();
-        can_rotate = false;
-      }
-    }
-    else {
-      can_rotate = true;
-    }
-
 
     // Effect different behavior here, based on the jump state
     // Note that this is a trashy, framerate-based implementation.
     if (JUMP_NOT_JUMPING == jump_state) {
-      if ((direction & KEY_SPACE) > 0) {
- //       if (body.getLinearVelocity().y < max_speed) //if we haven't reached the max speed in this direction
+      if ((direction & KEY_UP) > 0) {
+        if(CalculateMagnitudeInDirection(body.getLinearVelocity(), gravity_rotation+PI) < max_speed) {
           body.applyImpulse(
             new Vec2(80*cos(gravity_rotation-PI),
                      80*sin(gravity_rotation-PI)),
             body.getPosition()
           );
+        }
           
         // We can jump until we hit max velocity
         jump_state = JUMP_STARTING;
       }
     }
     else if (JUMP_STARTING == jump_state) {
-      if ((direction & KEY_SPACE) > 0) {
-//        if (body.getLinearVelocity().y < max_speed) //if we haven't reached the max speed in this direction
+      if ((direction & KEY_UP) > 0) {
+        if(CalculateMagnitudeInDirection(body.getLinearVelocity(), gravity_rotation+PI) < max_speed) {
           body.applyImpulse(
             new Vec2(80*cos(gravity_rotation-PI),
                      80*sin(gravity_rotation-PI)),
             body.getPosition()
           );
-//        else
-//          jump_state = JUMP_LANDING;
+        }
+        else {
+          jump_state = JUMP_LANDING;
+        }
       }
       else {
         jump_state = JUMP_LANDING;
@@ -129,7 +132,7 @@ class Hero {
       // TODO: check if it was the ground or not.
       // TODO: Walk through all contacts, not just the first.
       if (body.getContactList() != null) {
-        println(body.getContactList().contact);
+//        println(body.getContactList().contact);
         jump_state = JUMP_NOT_JUMPING;
       }
     }
@@ -179,9 +182,50 @@ class Hero {
     body.setMassFromShapes();
   }
   
-  void doRotate() {
+  void hitBoundary(Body b) {
+    // If we hit something to the right or left of us, then rotate gravity to reflect that.
+    
+    Vec2 diff = body.getPosition().sub(b.getPosition());
+
+    // magic
+    if(CalculateMagnitudeInDirection(diff, gravity_rotation) > 1.8) {
+      println("rotating!");
+//      println(body.getLinearVelocity().x);
+      float velocity_angle = c2a(body.getLinearVelocity());
+      println(velocity_angle);
+      println(gravity_rotation);
+      println(velocity_angle - (gravity_rotation%(2*PI)));
+      if ((abs(velocity_angle - gravity_rotation)%(2*PI)) < PI) {
+        doRotate(-PI/2);        
+      }
+      else {
+        doRotate(PI/2);
+      }
+      
+      // are we going left or right?
+      // left is this:
+      //        body.applyImpulse(
+      //    new Vec2(20*cos(gravity_rotation-PI/2),
+      //             20*sin(gravity_rotation-PI/2)),
+      //doRotate(PI/2);
+    }
+     
+//    Vec2 diff = body.getPosition().sub(b.getPosition());
+//    if (diff.x > 0 && diff.y < 0) {
+//      print("rotating!");
+//      println(diff);
+//      doRotate(-PI/2);
+//    }
+//    else if (diff.x > 0 && diff.y < 0) {
+//      print("rotating!");
+//      println(diff);
+//      doRotate(PI/2);
+//    }
+  }
+  
+  void doRotate(float rotation) {
     // only support 90 degree rotations and gravity
-    gravity_rotation += PI/2;
+    gravity_rotation += rotation;
     update_gravity();
   }
 }

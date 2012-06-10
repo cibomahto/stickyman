@@ -61,28 +61,34 @@ void update_gravity() {
 }
 
 void draw() {
-  background(255);
+  background(8,134,86);
 
   // We must always step through time!
   box2d.step();
 
   // If we just change rotation, we should animate to it.
   if (gravity_rotation != previous_gravity_rotation) {
-    previous_gravity_rotation += PI/20;
+    if(previous_gravity_rotation < gravity_rotation) {
+      previous_gravity_rotation += PI/20;
+    }
+    else {
+      previous_gravity_rotation -= PI/20;
+    }
   }
-  if (gravity_rotation - previous_gravity_rotation < .005) {
+  if (abs(gravity_rotation - previous_gravity_rotation) < .005) {
     previous_gravity_rotation = gravity_rotation;
   }
 
   pushMatrix();
     // rotate the screen so it makes sense
     translate(width/2, height/2);
-    
-    rotate(previous_gravity_rotation - PI*3/2);
-    // and zoom out if we aren't in the center
-    scale(1-.15*abs(sin(2*previous_gravity_rotation)));
-    
+      rotate(previous_gravity_rotation - PI*3/2);
+      // and zoom out if we aren't in the center
+      scale(1-.15*abs(sin(2*previous_gravity_rotation)));
     translate(-width/2, -height/2);
+    
+    fill(255);
+    rect(width/2,height/2,width,height);
 
     // Draw the boundaries
     for (int i = 0; i < boundaries.size(); i++) {
@@ -118,7 +124,7 @@ void keyPressed(){
 }
  
 void keyReleased(){
-  if (key == CODED) { 
+  if (key == CODED) {
     switch(keyCode) {
       case(UP):   player_direction ^=KEY_UP;   break;
       case(RIGHT):player_direction ^=KEY_RIGHT;break;
@@ -149,10 +155,14 @@ void addContact(ContactPoint cp) {
   String c1 = o1.getClass().getName();
   String c2 = o2.getClass().getName();
 
-  // If object 2 is a Box, then object 1 must be a particle
+  // Why does only c2 ever have the hero? we added him last?
   if (c2.contains("Hero")) {
-    Hero p = (Hero) o2;
-//    p.doRotate();
+    Hero h = (Hero) o2;
+    
+      if (c1.contains("Boundary")) {
+//        Boundary b = (Boundary) o1;
+        h.hitBoundary(b1);
+      }
   }
 }
 
